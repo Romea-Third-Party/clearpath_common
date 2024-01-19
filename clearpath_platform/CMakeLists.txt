@@ -66,124 +66,188 @@ target_include_directories(
   include
 )
 
-# A200 Hardware
-add_library(
-  a200_hardware
-  SHARED
-  src/a200/hardware.cpp
-  src/a200/status.cpp
-  src/a200/horizon_legacy/horizon_legacy_wrapper.cpp
-  src/a200/horizon_legacy/crc.cpp
-  src/a200/horizon_legacy/Logger.cpp
-  src/a200/horizon_legacy/Message.cpp
-  src/a200/horizon_legacy/Message_data.cpp
-  src/a200/horizon_legacy/Message_request.cpp
-  src/a200/horizon_legacy/Message_cmd.cpp
-  src/a200/horizon_legacy/Transport.cpp
-  src/a200/horizon_legacy/Number.cpp
-  src/a200/horizon_legacy/linux_serial.cpp
-)
 
-target_include_directories(
-  a200_hardware
-  PRIVATE
-  include
-)
+set(ROS_DISTRO $ENV{ROS_DISTRO})
+if(${ROS_DISTRO} STREQUAL "galactic")
 
-ament_target_dependencies(
-  a200_hardware
-  clearpath_platform_msgs
-  hardware_interface
-  pluginlib
-  rclcpp
-)
+  # A200 Hardware
+  add_library(
+    a200_hardware
+    SHARED
+    src/a200/horizon_legacy/horizon_legacy_wrapper.cpp
+    src/a200/horizon_legacy/crc.cpp
+    src/a200/horizon_legacy/Logger.cpp
+    src/a200/horizon_legacy/Message.cpp
+    src/a200/horizon_legacy/Message_data.cpp
+    src/a200/horizon_legacy/Message_request.cpp
+    src/a200/horizon_legacy/Message_cmd.cpp
+    src/a200/horizon_legacy/Transport.cpp
+    src/a200/horizon_legacy/Number.cpp
+    src/a200/horizon_legacy/linux_serial.cpp
+  )
+
+  target_include_directories(
+    a200_hardware
+    PRIVATE
+    include
+  )
+
+  ament_target_dependencies(
+    a200_hardware
+    clearpath_platform_msgs
+    rclcpp
+  )
+
+  # INSTALL
+  install(
+    TARGETS a200_hardware ${LIGHTING_EXECUTABLE}
+    LIBRARY DESTINATION lib
+    RUNTIME DESTINATION lib/${PROJECT_NAME}
+  )
+
+  install(
+    DIRECTORY include/
+    DESTINATION include
+  )
+
+  install(DIRECTORY config launch
+    DESTINATION share/${PROJECT_NAME}
+  )
+
+  install(DIRECTORY config launch
+    DESTINATION share/${PROJECT_NAME}
+  )
+
+  ## EXPORTS
+  ament_export_include_directories(
+    include
+  )
+
+  ament_export_libraries(
+    a200_hardware
+  )
+  ament_export_dependencies(
+    rclcpp
+  )
+
+else()
+  # A200 Hardware
+  add_library(
+    a200_hardware
+    SHARED
+    src/a200/hardware.cpp
+    src/a200/status.cpp
+    src/a200/horizon_legacy/horizon_legacy_wrapper.cpp
+    src/a200/horizon_legacy/crc.cpp
+    src/a200/horizon_legacy/Logger.cpp
+    src/a200/horizon_legacy/Message.cpp
+    src/a200/horizon_legacy/Message_data.cpp
+    src/a200/horizon_legacy/Message_request.cpp
+    src/a200/horizon_legacy/Message_cmd.cpp
+    src/a200/horizon_legacy/Transport.cpp
+    src/a200/horizon_legacy/Number.cpp
+    src/a200/horizon_legacy/linux_serial.cpp
+  )
 
 
-# J100 Hardware
-add_library(
-  j100_hardware
-  SHARED
-  src/j100/hardware.cpp
-  src/j100/hardware_interface.cpp
-  src/diff_drive/hardware.cpp
-  src/diff_drive/hardware_interface.cpp
-)
+  target_include_directories(
+    a200_hardware
+    PRIVATE
+    include
+  )
 
-target_include_directories(
-  j100_hardware
-  PRIVATE
-  include
-)
-
-ament_target_dependencies(
-  j100_hardware
-  clearpath_platform_msgs
-  hardware_interface
-  pluginlib
-  rclcpp
-)
-
-# W200 Hardware
-add_library(
-  w200_hardware
-  SHARED
-  src/w200/hardware.cpp
-  src/w200/hardware_interface.cpp
-)
-
-target_include_directories(
-  w200_hardware
-  PRIVATE
-  include
-)
-
-ament_target_dependencies(
-  w200_hardware
-  clearpath_platform_msgs
-  hardware_interface
-  pluginlib
-  rclcpp
-)
+  ament_target_dependencies(
+    a200_hardware
+    clearpath_platform_msgs
+    hardware_interface
+    pluginlib
+    rclcpp
+  )
 
 
-pluginlib_export_plugin_description_file(hardware_interface src/a200/hardware.xml)
-pluginlib_export_plugin_description_file(hardware_interface src/j100/hardware.xml)
-pluginlib_export_plugin_description_file(hardware_interface src/w200/hardware.xml)
+  # J100 Hardware
+  add_library(
+    j100_hardware
+    SHARED
+    src/j100/hardware.cpp
+    src/j100/hardware_interface.cpp
+    src/diff_drive/hardware.cpp
+    src/diff_drive/hardware_interface.cpp
+  )
+
+  target_include_directories(
+    j100_hardware
+    PRIVATE
+    include
+  )
+
+  ament_target_dependencies(
+    j100_hardware
+    clearpath_platform_msgs
+    hardware_interface
+    pluginlib
+    rclcpp
+  )
+
+  # W200 Hardware
+  add_library(
+    w200_hardware
+    SHARED
+    src/w200/hardware.cpp
+    src/w200/hardware_interface.cpp
+  )
+
+  target_include_directories(
+    w200_hardware
+    PRIVATE
+    include
+  )
+
+  ament_target_dependencies(
+    w200_hardware
+    clearpath_platform_msgs
+    hardware_interface
+    pluginlib
+    rclcpp
+  )
 
 
-# INSTALL
-install(
-  TARGETS a200_hardware
-          j100_hardware
-          w200_hardware
-          ${LIGHTING_EXECUTABLE}
-          ${LIGHTING_LIB}
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION lib/${PROJECT_NAME}
-)
-install(
-  DIRECTORY include/
-  DESTINATION include
-)
+  pluginlib_export_plugin_description_file(hardware_interface src/a200/hardware.xml)
+  pluginlib_export_plugin_description_file(hardware_interface src/j100/hardware.xml)
+  pluginlib_export_plugin_description_file(hardware_interface src/w200/hardware.xml)
 
-install(DIRECTORY config launch
-  DESTINATION share/${PROJECT_NAME}
-)
 
-## EXPORTS
-ament_export_include_directories(
-  include
-)
-ament_export_libraries(
-  a200_hardware
-  j100_hardware
-  w200_hardware
-  ${LIGHTING_LIB}
-)
-ament_export_dependencies(
-  hardware_interface
-  pluginlib
-  rclcpp
-)
+  # INSTALL
+  install(
+    TARGETS a200_hardware j100_hardware w200_hardware ${LIGHTING_EXECUTABLE}
+    LIBRARY DESTINATION lib
+    RUNTIME DESTINATION lib/${PROJECT_NAME}
+  )
+
+  install(
+    DIRECTORY include/
+    DESTINATION include
+  )
+
+  install(DIRECTORY config launch
+    DESTINATION share/${PROJECT_NAME}
+  )
+
+  ## EXPORTS
+  ament_export_include_directories(
+    include
+  )
+  ament_export_libraries(
+    a200_hardware
+    # j100_hardware
+    # w200_hardware
+  )
+  ament_export_dependencies(
+    # hardware_interface
+    # pluginlib
+    rclcpp
+  )
+
+endif()
 
 ament_package()
